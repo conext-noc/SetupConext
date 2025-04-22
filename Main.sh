@@ -277,7 +277,7 @@ if [ -e "SetupConext" ]; then
 fi
 
 # Baixa o script
-curl -sSL https://raw.githubusercontent.com/conext-noc/SetupConext/main/SetupConext -o SetupConext
+curl -sSL https://raw.githubusercontent.com/conext-noc/SetupConext/main/core/SetupConext -o SetupConext
 if [ $? -eq 0 ]; then
     echo "14/14 - [ OK ] - Ejecutando script"
     # Executa o script baixado
