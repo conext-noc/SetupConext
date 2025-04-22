@@ -281,6 +281,7 @@ curl -sSL https://raw.githubusercontent.com/conext-noc/SetupConext/main/core/Set
 if [ $? -eq 0 ]; then
     echo "14/14 - [ OK ] - Ejecutando script"
     # Executa o script baixado
+    cd /core
     chmod +x SetupOrion
     ./SetupOrion
 else
