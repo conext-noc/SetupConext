@@ -1,0 +1,477 @@
+## Comandos extras
+
+portainer.restart() {
+
+    echo ""
+    echo "Aguarde enquanto reiniciamos o Portainer"
+    echo ""
+    docker service update --force $(docker service ls --filter name='portainer_agent' -q) > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "1/2 - [ OK ]"
+    else
+        echo "1/2 - [ OFF ]"
+        echo "Não foi possivel reiniciar o portainer"
+    fi
+    docker service update --force $(docker service ls --filter name='portainer_portainer' -q) > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "2/2 - [ OK ]"
+    else
+        echo "2/2 - [ OFF ]"
+        echo "Não foi possivel reiniciar o portainer"
+    fi
+    sleep 2
+    clear
+}
+
+chatwoot.mail() {
+
+    echo ""
+    echo "Aguarde enquanto trocamos os emails..."
+    echo ""
+
+    #cd /var/lib/docker/volumes/chatwoot_mailer/_data/app/views/devise/mailer/
+    cd /var/lib/docker/volumes/chatwoot_mailer/_data/
+
+    # Renomeia os arquivos
+    mv password_change.html.erb password_change.html.erb.old > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "1/9 - [ OK ]"
+    else
+        echo "1/9 - [ OFF ]"
+        echo "Não foi possivel mudar email."
+    fi
+    mv confirmation_instructions.html.erb confirmation_instructions.html.erb.old > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "2/9 - [ OK ]"
+    else
+        echo "2/9 - [ OFF ]"
+        echo "Não foi possivel mudar email."
+    fi
+    mv reset_password_instructions.html.erb reset_password_instructions.html.erb.old > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "3/9 - [ OK ]"
+    else
+        echo "3/9 - [ OFF ]"
+        echo "Não foi possivel mudar email."
+    fi
+    mv unlock_instructions.html.erb unlock_instructions.html.erb.old > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "4/9 - [ OK ]"
+    else
+        echo "4/9 - [ OFF ]"
+        echo "Não foi possivel mudar email."
+    fi
+    
+    # Baixa os novos arquivos
+    wget -O confirmation_instructions.html.erb https://github.com/oriondesign2015/SetupOrion/raw/main/Extras/Chatwoot/emails/confirmation_instructions.html.erb > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "5/9 - [ OK ]"
+    else
+        echo "5/9 - [ OFF ]"
+        echo "Não foi possivel baixar email."
+    fi
+    wget -O password_change.html.erb https://github.com/oriondesign2015/SetupOrion/raw/main/Extras/Chatwoot/emails/password_change.html.erb > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "6/9 - [ OK ]"
+    else
+        echo "6/9 - [ OFF ]"
+        echo "Não foi possivel baixar email."
+    fi
+    wget -O reset_password_instructions.html.erb https://github.com/oriondesign2015/SetupOrion/raw/main/Extras/Chatwoot/emails/reset_password_instructions.html.erb > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "7/9 - [ OK ]"
+    else
+        echo "7/9 - [ OFF ]"
+        echo "Não foi possivel baixar email."
+    fi
+    wget -O unlock_instructions.html.erb https://github.com/oriondesign2015/SetupOrion/raw/main/Extras/Chatwoot/emails/unlock_instructions.html.erb > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "8/9 - [ OK ]"
+    else
+        echo "8/9 - [ OFF ]"
+        echo "Não foi possivel baixar email."
+    fi
+    
+    cd
+    cd
+
+    # Deleta os containers do Chatwoot
+    docker rm -f $(docker ps -a | grep 'chatwoot' | awk '{print $1}') > /dev/null 2>&1
+
+    if [ $? -eq 0 ]; then
+        echo "9/9 - [ OK ]"
+    else
+        echo "9/9 - [ OFF ]"
+        echo "Não foi possivel deletar containers."
+    fi
+
+    echo ""
+    echo "Esperando containers subir..."
+    wait_30_sec
+
+    echo ""
+    echo "Concluido!"
+    sleep 2
+}
+
+chatwoot.n.mail() {
+
+    echo ""
+    echo "Aguarde enquanto trocamos os emails..."
+    echo ""
+
+    #cd /var/lib/docker/volumes/chatwoot_mailer/_data/app/views/devise/mailer/
+    cd /var/lib/docker/volumes/chatwoot_nestor_mailer/_data/
+
+    # Renomeia os arquivos
+    mv password_change.html.erb password_change.html.erb.old > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "1/9 - [ OK ]"
+    else
+        echo "1/9 - [ OFF ]"
+        echo "Não foi possivel mudar email."
+    fi
+    mv confirmation_instructions.html.erb confirmation_instructions.html.erb.old > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "2/9 - [ OK ]"
+    else
+        echo "2/9 - [ OFF ]"
+        echo "Não foi possivel mudar email."
+    fi
+    mv reset_password_instructions.html.erb reset_password_instructions.html.erb.old > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "3/9 - [ OK ]"
+    else
+        echo "3/9 - [ OFF ]"
+        echo "Não foi possivel mudar email."
+    fi
+    mv unlock_instructions.html.erb unlock_instructions.html.erb.old > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "4/9 - [ OK ]"
+    else
+        echo "4/9 - [ OFF ]"
+        echo "Não foi possivel mudar email."
+    fi
+    
+    # Baixa os novos arquivos
+    wget -O confirmation_instructions.html.erb https://github.com/oriondesign2015/SetupOrion/raw/main/Extras/Chatwoot/emails/confirmation_instructions.html.erb > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "5/9 - [ OK ]"
+    else
+        echo "5/9 - [ OFF ]"
+        echo "Não foi possivel baixar email."
+    fi
+    wget -O password_change.html.erb https://github.com/oriondesign2015/SetupOrion/raw/main/Extras/Chatwoot/emails/password_change.html.erb > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "6/9 - [ OK ]"
+    else
+        echo "6/9 - [ OFF ]"
+        echo "Não foi possivel baixar email."
+    fi
+    wget -O reset_password_instructions.html.erb https://github.com/oriondesign2015/SetupOrion/raw/main/Extras/Chatwoot/emails/reset_password_instructions.html.erb > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "7/9 - [ OK ]"
+    else
+        echo "7/9 - [ OFF ]"
+        echo "Não foi possivel baixar email."
+    fi
+    wget -O unlock_instructions.html.erb https://github.com/oriondesign2015/SetupOrion/raw/main/Extras/Chatwoot/emails/unlock_instructions.html.erb > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "8/9 - [ OK ]"
+    else
+        echo "8/9 - [ OFF ]"
+        echo "Não foi possivel baixar email."
+    fi
+    
+    cd
+    cd
+
+    # Deleta os containers do Chatwoot
+    docker rm -f $(docker ps -a | grep 'chatwoot' | awk '{print $1}') > /dev/null 2>&1
+
+    if [ $? -eq 0 ]; then
+        echo "9/9 - [ OK ]"
+    else
+        echo "9/9 - [ OFF ]"
+        echo "Não foi possivel deletar containers."
+    fi
+
+    echo ""
+    echo "Esperando containers subir..."
+    wait_30_sec
+
+    echo ""
+    echo "Concluido!"
+    sleep 2
+}
+
+n8n.workflows(){
+while true; do
+    if docker ps -q --filter "name=n8n_quepasa_n8n_quepasa_editor" | grep -q .; then
+        # Capturar o ID do container
+        container_id=$(docker ps --filter "name=n8n_quepasa_n8n_quepasa_editor" --format "{{.ID}}")
+
+        # Verificar se o ID do container foi capturado corretamente
+        if [ -z "$container_id" ]; then
+            echo "Erro: Não foi possível encontrar o ID do contêiner."
+            exit 1
+        fi
+
+        # Executar o código no contêiner apenas se ele estiver em execução
+        docker exec "$container_id" /bin/sh -c '
+            # Criando diretório temporário
+            temp_dir=$(mktemp -d)
+
+            # Entrando no diretório temporário
+            cd "$temp_dir"
+
+            # Baixando workflows
+
+            wget "https://raw.githubusercontent.com/DeividMs/QP_Setup_Orion/main/workflows/latest/ChatwootExtra.json"
+            wget "https://raw.githubusercontent.com/DeividMs/QP_Setup_Orion/main/workflows/latest/ChatwootProfileUpdate.json"
+            wget "https://raw.githubusercontent.com/DeividMs/QP_Setup_Orion/main/workflows/latest/ChatwootToQuepasa.json"
+            wget "https://raw.githubusercontent.com/DeividMs/QP_Setup_Orion/main/workflows/latest/GetChatwootContacts.json"
+            wget "https://raw.githubusercontent.com/DeividMs/QP_Setup_Orion/main/workflows/latest/GetValidConversation.json"
+            wget "https://raw.githubusercontent.com/DeividMs/QP_Setup_Orion/main/workflows/latest/MsgRejectCall.json"
+            wget "https://raw.githubusercontent.com/DeividMs/QP_Setup_Orion/main/workflows/latest/PostToChatwoot.json"
+            wget "https://raw.githubusercontent.com/DeividMs/QP_Setup_Orion/main/workflows/latest/PostToWebCallBack.json"
+            wget "https://raw.githubusercontent.com/DeividMs/QP_Setup_Orion/main/workflows/latest/QuepasaAutomatic.json"
+            wget "https://raw.githubusercontent.com/DeividMs/QP_Setup_Orion/main/workflows/latest/QuepasaChatControl.json"
+            wget "https://raw.githubusercontent.com/DeividMs/QP_Setup_Orion/main/workflows/latest/QuepasaContactsImport.json"
+            wget "https://raw.githubusercontent.com/DeividMs/QP_Setup_Orion/main/workflows/latest/QuepasaInboxControl.json"
+            wget "https://raw.githubusercontent.com/DeividMs/QP_Setup_Orion/main/workflows/latest/QuepasaInboxControl+soc.json"
+            wget "https://raw.githubusercontent.com/DeividMs/QP_Setup_Orion/main/workflows/latest/QuepasaInboxControl+typebot.json"
+            wget "https://raw.githubusercontent.com/DeividMs/QP_Setup_Orion/main/workflows/latest/QuepasaInboxControl+webhook.json"
+            wget "https://raw.githubusercontent.com/DeividMs/QP_Setup_Orion/main/workflows/latest/QuepasaQrcode.json"
+            wget "https://raw.githubusercontent.com/DeividMs/QP_Setup_Orion/main/workflows/latest/QuepasaToChatwoot.json"
+            wget "https://raw.githubusercontent.com/DeividMs/QP_Setup_Orion/main/workflows/latest/ToChatwootTranscriptViaOpenAI.json"
+            wget "https://raw.githubusercontent.com/DeividMs/QP_Setup_Orion/main/workflows/latest/ToTypeBot.json"
+
+            # Subindo workflows
+            n8n import:workflow --input="$temp_dir" --separate
+
+            # Verificando se os workflows foram importados com sucesso
+            if [ $? -eq 0 ]; then
+                echo "Workflows importados com sucesso"
+            else
+                echo "Erro ao importar workflows"
+                exit 1
+            fi
+
+            # Ativando os workflows
+            
+            n8n update:workflow --id 1008 --active=true && echo "Fluxo ChatwootToQuepasa ativado" || echo "Erro ao ativar fluxo ChatwootToQuepasa"
+            n8n update:workflow --id 1009 --active=true && echo "Fluxo QuepasaToChatwoot ativado" || echo "Erro ao ativar fluxo QuepasaToChatwoot"
+            n8n update:workflow --id 1011 --active=true && echo "Fluxo QuepasaAutomatic ativado" || echo "Erro ao ativar QuepasaAutomatic 1011"
+            n8n update:workflow --id z7iqKYC8r5nPRRHt --active=true && echo "Fluxo QuepasaQrcode ativado" || echo "Erro ao ativar fluxo QuepasaQrcode"
+            n8n update:workflow --id GIPTrjgdT9vuOSlN --active=true && echo "Fluxo MsgRejectCall ativado" || echo "Erro ao ativar fluxo MsgRejectCall"
+
+
+        '
+        break
+    else
+        clear
+        erro_msg
+        echo ""
+        echo -e "Ops, parece que você não instalou a opção \e[32m[28] N8N + Nodes Quepasa${reset} ${branco}do nosso instalador.${reset}"
+        echo "Instale antes de tentar instalar esta aplicação."
+        echo ""
+        echo "Pressione CTRL C para sair do instalador."
+        sleep 5
+        exit
+    fi
+done
+
+}
+
+portainer.reset() {
+    cd
+    clear
+    nome_portainer.reset
+    echo "Aguarde enquanto reseto a senha do portainer..."
+    echo ""
+
+    docker service scale portainer_portainer=0 > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "1/7 - [ OK ]"
+    else
+        echo "1/7 - [ OFF ]"
+        echo "Ops, não foi possivel derrubar o serviço do portainer"
+    fi
+
+    docker pull portainer/helper-reset-password > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "2/7 - [ OK ]"
+    else
+        echo "2/7 - [ OFF ]"
+        echo "Ops, não foi possivel super o serviço de reset password do portainer"
+    fi
+
+    script -c "docker run --rm -v /var/lib/docker/volumes/portainer_data/_data:/data portainer/helper-reset-password" output.txt > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "3/7 - [ OK ]"
+    else
+        echo "3/7 - [ OFF ]"
+        echo "Ops, não foi possivel resetar a senha do portainer"
+    fi
+
+    cd
+    #STACK_NAME="portainer"
+    #stack_editavel > /dev/null 2>&1
+    docker stack deploy --prune --resolve-image always -c portainer.yaml portainer > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "4/7 - [ OK ]"
+    else
+        echo "4/7 - [ OFF ]"
+        echo "Ops, não foi possivel subir a stack do portainer"
+    fi
+
+    USER=$(grep -oP 'user: \K[^,]*' output.txt)
+    if [ $? -eq 0 ]; then
+        echo "5/7 - [ OK ]"
+    else
+        echo "5/7 - [ OFF ]"
+        echo "Ops, não foi possivel pegar o usuario do portainer"
+    fi
+
+    PASSWORD=$(grep -oP 'login: \K.*' output.txt)
+    if [ $? -eq 0 ]; then
+        echo "6/7 - [ OK ]"
+    else
+        echo "6/7 - [ OFF ]"
+        echo "Ops, não foi possivel pegar a senha do portainer"
+    fi
+
+    rm output.txt
+    if [ $? -eq 0 ]; then
+        echo "7/7 - [ OK ]"
+    else
+        echo "7/7 - [ OFF ]"
+        echo "Ops, não foi possivel remover o arquivo output. txt ou ele não existe"
+    fi
+
+    echo ""
+    sleep 3
+    clear
+    nome_portainer.reset
+    echo -e "\e[32m[ PORTAINER ]\e[0m"
+    echo ""
+    
+    echo -e "\e[97mUsuario:\e[33m $USER\e[0m"
+    echo ""
+    
+    echo -e "\e[97mNova Senha:\e[33m $PASSWORD\e[0m"
+    
+    ## Creditos do instalador
+    creditos_msg
+
+    read -p "Deseja voltar ao menu principal? (Y/N): " choice
+    if [ "$choice" = "Y" ] || [ "$choice" = "y" ]; then
+        return
+    else
+        cd
+        cd
+        clear
+        exit 1
+    fi
+}
+
+ctop() {
+
+    echo ""
+    echo "Instalando CTOP"
+    sudo wget https://github.com/bcicen/ctop/releases/download/v0.7.7/ctop-0.7.7-linux-amd64 -O /usr/local/bin/ctop
+    if [ $? -eq 0 ]; then
+        echo "1/2 - [ OK ] - Baixando CTOP"
+    else
+        echo "1/2 - [ OFF ] - Baixando CTOP"
+        echo "Ops, não foi possivel baixar o CTOP"
+    fi
+
+    sudo chmod +x /usr/local/bin/ctop
+    if [ $? -eq 0 ]; then
+        echo "2/2 - [ OK ] - Dando permissão ao CTOP"
+    else
+        echo "2/2 - [ OFF ] - Dando permissão ao CTOP"
+        echo "Ops, não foi possivel dar permissão ao CTOP"
+    fi
+    echo ""
+    echo "Instalado, digite CTOP fora do nosso Setup oara executa-lo a qualquer momento."
+    echo ""
+    sleep 5
+
+}
+
+quepasa.setup.off(){
+    echo ""
+    echo "Desativando painel /setup do quepasa"
+    mv /var/lib/docker/volumes/quepasa_volume/_data/views/setup.tmpl /var/lib/docker/volumes/quepasa_volume/_data/views/setup.old
+    if [ $? -eq 0 ]; then
+        echo "1/1 - [ OK ] - Painel /setup Desativado"
+    else
+        echo "1/1 - [ OFF ] - Erro ao desativar painel"
+        echo "Tente novamente mais tarde ou verifique se você tem Quepasa instalado."
+    fi
+    echo ""
+    echo "Voltando ao menu de ferramentas..."
+    sleep 5
+}
+
+quepasa.setup.on(){
+    echo ""
+    echo "Ativando painel /setup do quepasa"
+    mv /var/lib/docker/volumes/quepasa_volume/_data/views/setup.old /var/lib/docker/volumes/quepasa_volume/_data/views/setup.tmpl
+    if [ $? -eq 0 ]; then
+        echo "1/1 - [ OK ] - Painel /setup Ativado"
+    else
+        echo "1/1 - [ OFF ] - Erro ao Ativar painel"
+        echo "Tente novamente mais tarde ou verifique se você tem Quepasa instalado."
+    fi
+    echo ""
+    echo "Voltando ao menu de ferramentas..."
+    sleep 5
+}
+
+# Função para calcular espaço de disco
+armazenamento_livre() {
+    df_output=$(df --output=used,avail,size --block-size=1G / | tail -n1)
+    used=$(echo "$df_output" | awk '{print $1}')
+    avail=$(echo "$df_output" | awk '{print $2}')
+    total=$(echo "$df_output" | awk '{print $3}')
+    percentage=$((100 * used / total))
+
+    echo "$used $avail $total $percentage"
+}
+
+# Função principal
+limpar() {
+    clear
+    nome_expurgando
+    echo -e "\e[97m• VERIFICANDO ESPAÇO DISPONÍVEL \e[33m[1/3]\e[0m"
+    echo ""
+    sleep 1
+    read used_before avail_before total_before percent_before <<<"$(armazenamento_livre)"
+    echo -e "Espaço usado: \e[33m${used_before}Gb\e[0m (\e[33m${percent_before}%\e[0m usado)"
+    echo -e "Espaço livre: \e[33m${avail_before}Gb\e[0m de \e[33m${total_before}Gb\e[0m"
+    echo ""
+
+    echo -e "\e[97m• LIMPANDO RECURSOS NÃO UTILIZADOS DO DOCKER \e[33m[2/3]\e[0m"
+    echo ""
+    sleep 1
+    docker system prune -af > /dev/null
+    truncate -s 0 /var/lib/docker/containers/*/*-json.log > /dev/null
+    sleep 1
+
+    echo -e "\e[97m• LIMPEZA CONCLUÍDA \e[33m[3/3]\e[0m"
+    echo ""
+    read used_after avail_after total_after percent_after <<<"$(armazenamento_livre)"
+    echo -e "Espaço usado: \e[33m${used_after}Gb\e[0m (\e[33m${percent_after}%\e[0m usado)"
+    echo -e "Espaço livre: \e[33m${avail_after}Gb\e[0m de \e[33m${total_after}Gb\e[0m"
+
+    # Calcular espaço liberado
+    space_freed=$((used_before - used_after))
+    echo -e "Foi liberado: \e[33m${space_freed}Gb\e[0m do seu servidor"
+    echo ""
+    echo -e "\e[97mVoltando ao menu principal em 10 segundos...\e[0m"
+    sleep 10
+}

@@ -111,6 +111,15 @@ aviso_verificando
 echo "Espera mientras verificamos algunos datos."
 sleep 1
 
+# Verifica se o usuário é root
+if [ "$(id -u)" -ne 0 ]; then
+    echo "Este script precisa ser executado como root. Executando sudo su..."
+    sudo su
+    sleep 2
+    clear
+    ./Main
+fi
+
 # Verifica se está usando Ubuntu 20.04
 if ! grep -q 'Ubuntu 20.04' /etc/os-release; then
     aviso_aviso
@@ -121,13 +130,8 @@ if ! grep -q 'Ubuntu 20.04' /etc/os-release; then
     aviso_verificando
 fi
 
-# Verifica se o usuário é root
-if [ "$(id -u)" -ne 0 ]; then
-    echo "Este script precisa ser executado como root. Executando sudo su..."
-    sudo su
-fi
 
-# Verifica se o usuário está no diretório /root/
+Verifica se o usuário está no diretório /root/
 if [ "$PWD" != "/root" ]; then
     echo "Mudando para o diretório /root/"
     cd /root || exit
@@ -281,9 +285,10 @@ curl -sSL https://raw.githubusercontent.com/conext-noc/SetupConext/main/core/Set
 if [ $? -eq 0 ]; then
     echo "14/14 - [ OK ] - Ejecutando script"
     # Executa o script baixado
-    cd /core
-    chmod +x SetupOrion
-    ./SetupOrion
+    cd ./core
+    sleep 5
+    chmod +x SetupConext
+    ./SetupConext
 else
     echo "14/14 - [ OFF ] - Ejecutando o script"
     echo "Cerrando Setup"
@@ -297,6 +302,5 @@ fi
 
 sudo apt update
 sudo apt upgrade -y
-
 clear
-rm SetupConext
+# rm SetupConext
