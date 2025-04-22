@@ -1,0 +1,25 @@
+#!/bin/bash
+
+amarelo="\e[33m"
+verde="\e[32m"
+branco="\e[97m"
+bege="\e[93m"
+vermelho="\e[91m"
+reset="\e[0m"
+
+menu_instalador = "1"
+
+source ./core/Menu
+
+
+menu_instalador() {
+  case $menu_instalador in
+    1) menu_instalador_pg_1 ;;
+    2) menu_instalador_pg_2 ;;
+    *) echo "Erro ao listar menu..." ;;
+  esac
+}
+source Menu
+
+menu_instalador_pg_1
+menu_instalador_pg_2
