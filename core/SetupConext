@@ -185,6 +185,7 @@ guarde_os_dados_msg() {
     echo ""
 }
 
+source ./core/BigTittle
 ## Mensagem de Instalando
 
 # instalando_msg() {
