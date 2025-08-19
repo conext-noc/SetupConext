@@ -1,4 +1,3 @@
-<img src="https://github.com/user-attachments/assets/f1381a28-79e2-4fea-984c-4440476cdcc2" alt="SetupOrion">
 
 
 ---
