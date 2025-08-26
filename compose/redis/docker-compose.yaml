@@ -1,0 +1,45 @@
+
+services:
+
+## --------------------------- ORION --------------------------- ##
+
+  redis:
+    image: redis:latest  ## Versão do Redis
+    container_name: ${CONTAINER_NAME}
+    restart: unless-stopped
+    command: [
+        "redis-server",
+        "--appendonly",
+        "yes",
+        "--port",
+        "6379"
+      ]
+
+    volumes:
+      - redis_data:/data
+
+    # networks:
+    #   - principal ## Nome da rede interna
+
+    ## Descomente as linhas abaixo para uso externo
+    #ports:
+    #  - 6379:6379
+
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1024M
+
+## --------------------------- ORION --------------------------- ##
+
+volumes:
+  redis_data:
+    name: redis_data
+
+networks:
+  ${RED_NAME}: ## Nome da rede interna
+    name: ${RED_NAME} ## Nome da rede interna

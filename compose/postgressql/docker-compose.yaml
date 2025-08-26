@@ -1,0 +1,48 @@
+services:
+
+## --------------------------- ORION --------------------------- ##
+
+  postgres:
+    container_name: ${CONTAINER_NAME} ## Nome do container
+    image: postgres:14 ## Versão do postgres
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    # networks:
+    #   - ${RED_NAME} ## Nome da rede interna
+
+    ## Descomente as linhas abaixo para uso externo
+    ports:
+     - 5432:5432
+
+    environment:
+      ## Senha do postgres
+      
+      - POSTGRES_USER=n8n # Sets the PostgreSQL user 
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=n8n_db # Sets the default database name
+      - PG_MAX_CONNECTIONS=500
+      
+
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1024M
+
+## --------------------------- ORION --------------------------- ##
+
+volumes:
+  postgres_data:
+    # external: true
+    name: postgres_data
+
+networks:
+  ${RED_NAME}: ## Nome da rede interna
+    name: ${RED_NAME} ## Nome da rede interna

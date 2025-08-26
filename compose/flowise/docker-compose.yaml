@@ -1,0 +1,62 @@
+version: "3.7"
+services:
+
+## --------------------------- ORION --------------------------- ##
+
+  flowise:
+    image: flowiseai/flowise:latest ## Versão do Flowise
+
+    volumes:
+     - flowise_data:/root/.flowise
+
+    networks:
+     - principal ## Nome da rede interna
+
+    environment:
+     ## Dados de acesso
+     - FLOWISE_USERNAME=admin
+     - FLOWISE_PASSWORD=conext@123
+
+     ## Dados do Postgres
+     - DATABASE_TYPE=postgres
+     - DATABASE_HOST=postgres
+     - DATABASE_PORT=5432
+     - DATABASE_USER=postgres
+     - DATABASE_PASSWORD=a9022987d6d0819b7707a9cef2f1f5db
+     - DATABASE_NAME=flowise
+
+     ## Encryption Key
+     - FLOWISE_SECRETKEY_OVERWRITE=e131db84e02237cdb8a8b03a7654807b
+
+     ## Diretório das API Keys
+     - APIKEY_PATH=/root/.flowise
+     - SECRETKEY_PATH=/root/.flowise
+
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1024M
+      # labels:
+      #   - traefik.enable=true
+      #   - traefik.http.routers.flowise${1:+_$1}.rule=Host(\`$url_flowise\`) ## Url da aplicação
+      #   - traefik.http.services.flowise${1:+_$1}.loadBalancer.server.port=3000
+      #   - traefik.http.routers.flowise${1:+_$1}.service=flowise${1:+_$1}
+      #   - traefik.http.routers.flowise${1:+_$1}.entrypoints=websecure
+      #   - traefik.http.routers.flowise${1:+_$1}.tls.certresolver=letsencryptresolver
+
+## --------------------------- ORION --------------------------- ##
+
+volumes:
+  flowise_data:
+    #external: true
+
+networks:
+  principal: ## Nome da rede interna
+    external: true
+    name: principal ## Nome da rede interna

@@ -1,0 +1,248 @@
+version: "3.7"
+services:
+
+## --------------------------- ORION --------------------------- ##
+
+  n8n_editor:
+    image: n8nio/n8n:1.107.4 ## Versão do N8N 1.95.3 or 1.104.2 backup
+    container_name: ${CONTAINER_NAME}_MAIN ## Nome do container
+    restart: unless-stopped
+    command: start #--tunnel
+
+    # networks:
+    #   - principal ## Nome da rede interna
+      
+    ports:
+     - 5678:5678
+    environment:
+      ## Dados do postgres
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_DATABASE=n8n_db
+      - DB_POSTGRESDB_HOST=${CONTAINER_NAME}_DB_POSTGRESQL
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_USER=n8n
+      - DB_POSTGRESDB_PASSWORD=${DB_PASSWORD}
+
+      ## Encryption Key
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+
+      ## Url do N8N
+      - N8N_HOST=${SSL}://${URL}/
+      - N8N_EDITOR_BASE_URL=${SSL}://${URL}/
+      - WEBHOOK_URL=${SSL}://${URL}/
+      - WEBHOOK_TUNNEL_URL=${SSL}://${URL}/
+      - N8N_PROTOCOL=${SSL}
+
+      ## Modo do Node
+      - NODE_ENV=production
+
+      ## Modo de execução (deletar caso deseje em modo regular)
+      - EXECUTIONS_MODE=queue
+      - N8N_LOG_LEVEL=debug
+      - N8N_DISABLE_PRODUCTION_MAIN_PROCESS=false
+
+      ## Community Nodes
+      - N8N_REINSTALL_MISSING_PACKAGES=true
+      - N8N_COMMUNITY_PACKAGES_ENABLED=true
+      - N8N_NODE_PATH=/home/node/.n8n/nodes
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
+      - N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
+      - N8N_SECURE_COOKIE=false
+
+      ## Dados SMTP
+      - N8N_SMTP_SENDER=${SMTP_CORREO}
+      - N8N_SMTP_USER=${SMTP_CORREO}
+      - N8N_SMTP_PASS=${SMTP_PASS}
+      - N8N_SMTP_HOST=smtp.gmail.com
+      - N8N_SMTP_PORT=465
+      - N8N_SMTP_SSL=false
+
+      ## Dados do Redis
+      - QUEUE_BULL_REDIS_HOST=${CONTAINER_NAME}_DB_REDIS
+      - QUEUE_BULL_REDIS_PORT=6379
+      - QUEUE_BULL_REDIS_DB=2
+      - NODE_FUNCTION_ALLOW_EXTERNAL=moment,lodash
+      - N8N_RUNNERS_ENABLED=true
+      - OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=336
+
+      ## Timezone
+      - GENERIC_TIMEZONE=America/Caracas
+      - TZ=America/Caracas
+
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2048M
+      
+
+## --------------------------- ORION --------------------------- ##
+
+  n8n_webhook:
+    image: n8nio/n8n:1.107.4 ## Versão do N8N
+    container_name: ${CONTAINER_NAME}_WEBHOOK ## Nome do container
+    restart: unless-stopped
+    command: webhook
+
+    # networks:
+    #   - principal ## Nome da rede interna
+
+    environment:
+      ## Dados do postgres
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_DATABASE=n8n_db
+      - DB_POSTGRESDB_HOST=${CONTAINER_NAME}_DB_POSTGRESQL
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_USER=n8n
+      - DB_POSTGRESDB_PASSWORD=${DB_PASSWORD}
+
+      ## Encryption Key
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+
+      ## Url do N8N
+      - N8N_HOST=${SSL}://${URL}/
+      - N8N_EDITOR_BASE_URL=${SSL}://${URL}/
+      - WEBHOOK_URL=${SSL}://${URL}/
+      - WEBHOOK_TUNNEL_URL=${SSL}://${URL}/
+      - N8N_PROTOCOL=${SSL}
+
+      ## Modo do Node
+      - NODE_ENV=production
+      
+
+      ## Modo de execução (deletar caso deseje em modo regular)
+      - EXECUTIONS_MODE=queue
+      - N8N_LOG_LEVEL=debug
+      #- N8N_DISABLE_PRODUCTION_MAIN_PROCESS=false
+
+      ## Community Nodes
+      - N8N_REINSTALL_MISSING_PACKAGES=true
+      - N8N_COMMUNITY_PACKAGES_ENABLED=true
+      - N8N_NODE_PATH=/home/node/.n8n/nodes
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
+      - N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
+      - N8N_SECURE_COOKIE=false
+
+      ## Dados SMTP
+      - N8N_SMTP_SENDER=${SMTP_CORREO}
+      - N8N_SMTP_USER=${SMTP_CORREO}
+      - N8N_SMTP_PASS=${SMTP_PASS}
+      - N8N_SMTP_HOST=smtp.gmail.com
+      - N8N_SMTP_PORT=465
+      - N8N_SMTP_SSL=false
+
+      ## Dados do Redis
+      - QUEUE_BULL_REDIS_HOST=${CONTAINER_NAME}_DB_REDIS
+      - QUEUE_BULL_REDIS_PORT=6379
+      - QUEUE_BULL_REDIS_DB=2
+      - NODE_FUNCTION_ALLOW_EXTERNAL=moment,lodash
+      - N8N_RUNNERS_ENABLED=true
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=336
+
+      ## Timezone
+      - GENERIC_TIMEZONE=America/Caracas
+      - TZ=America/Caracas
+      
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1024M
+     
+
+## --------------------------- ORION --------------------------- ##
+
+  n8n_worker:
+    image: n8nio/n8n:1.107.4 ## Versão do N8N
+    container_name: ${CONTAINER_NAME}_WORKER ## Nome do container
+    restart: unless-stopped
+    command: worker --concurrency=15
+
+    # networks:
+    #   - principal ## Nome da rede interna
+
+    environment:
+      ## Dados do postgres
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_DATABASE=n8n_db
+      - DB_POSTGRESDB_HOST=${CONTAINER_NAME}_DB_POSTGRESQL
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_USER=n8n
+      - DB_POSTGRESDB_PASSWORD=${DB_PASSWORD}
+
+      ## Encryption Key
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+
+      ## Url do N8N
+      - N8N_HOST=${SSL}://${URL}/
+      - N8N_EDITOR_BASE_URL=${SSL}://${URL}/
+      - WEBHOOK_URL=${SSL}://${URL}/
+      - WEBHOOK_TUNNEL_URL=${SSL}://${URL}/
+      - N8N_PROTOCOL=${SSL}
+
+      ## Modo do Node
+      - NODE_ENV=production
+
+      ## Modo de execução (deletar caso deseje em modo regular)
+      - EXECUTIONS_MODE=queue
+      - N8N_LOG_LEVEL=debug
+      #- N8N_DISABLE_PRODUCTION_MAIN_PROCESS=false
+
+      ## Community Nodes
+      - N8N_REINSTALL_MISSING_PACKAGES=true
+      - N8N_COMMUNITY_PACKAGES_ENABLED=true
+      - N8N_NODE_PATH=/home/node/.n8n/nodes
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
+      - N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
+      - N8N_SECURE_COOKIE=false
+
+      ## Dados SMTP
+      - N8N_SMTP_SENDER=${SMTP_CORREO}
+      - N8N_SMTP_USER=${SMTP_CORREO}
+      - N8N_SMTP_PASS=${SMTP_PASS}
+      - N8N_SMTP_HOST=smtp.gmail.com
+      - N8N_SMTP_PORT=465
+      - N8N_SMTP_SSL=false
+
+      ## Dados do Redis
+      - QUEUE_BULL_REDIS_HOST=${CONTAINER_NAME}_DB_REDIS
+      - QUEUE_BULL_REDIS_PORT=6379
+      - QUEUE_BULL_REDIS_DB=2
+      - NODE_FUNCTION_ALLOW_EXTERNAL=moment,lodash
+      - N8N_RUNNERS_ENABLED=true
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=336
+
+      ## Timezone
+      - GENERIC_TIMEZONE=America/Caracas
+      - TZ=America/Caracas
+      
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1024M
+
+## --------------------------- ORION --------------------------- ##
+
+networks:
+  ${RED_NAME}: ## Nome da rede interna
+    name: ${RED_NAME} ## Nome da rede interna

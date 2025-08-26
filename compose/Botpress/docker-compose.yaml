@@ -1,0 +1,57 @@
+version: "3.7"
+services:
+
+## --------------------------- ORION --------------------------- ##
+
+  botpress:
+    image: botpress/server:latest
+
+    volumes:
+      - botpress_data:/botpress/data
+
+    networks:
+      - principal ## Nome da rede interna
+
+    environment:
+      ## Url Botpress
+      - EXTERNAL_URL=https://botpress.conext.net.ve
+
+      ## Modo
+      - BP_PRODUCTION=true
+
+      ## Dados Postgres
+      - DATABASE_URL=postgresql://postgres:a9022987d6d0819b7707a9cef2f1f5db@postgres:5432/botpress
+
+      ## Dados Redis
+      - REDIS_URL=redis://redis:6379
+
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1024M
+      # labels:
+      #   - traefik.enable=true
+      #   - traefik.http.routers.botpress${1:+_$1}.rule=Host(\`$url_botpress\`)
+      #   - traefik.http.services.botpress${1:+_$1}.loadbalancer.server.port=3000
+      #   - traefik.http.routers.botpress${1:+_$1}.service=botpress${1:+_$1}
+      #   - traefik.http.routers.botpress${1:+_$1}.tls.certresolver=letsencryptresolver
+      #   - traefik.http.routers.botpress${1:+_$1}.entrypoints=websecure
+      #   - traefik.http.routers.botpress${1:+_$1}.tls=true
+
+## --------------------------- ORION --------------------------- ##
+
+volumes:
+  botpress_data:
+    external: true
+    name: botpress_data
+
+networks:
+  principal: ## Nome da rede interna
+    name: principal ## Nome da rede interna
+    #external: true
