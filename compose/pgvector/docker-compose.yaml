@@ -5,6 +5,7 @@ services:
 
   pgvector:
     image: pgvector/pgvector:pg16 ## Versão do PgVector
+    container_name: ${CONTAINER_NAME} ## Nome do container
     restart: unless-stopped
     command: >
       postgres
@@ -14,8 +15,8 @@ services:
     volumes:
       - pgvector:/var/lib/postgresql/data
 
-    networks:
-      - principal ## Nome da rede interna
+    # networks:
+    #   - principal ## Nome da rede interna
 
     ## Descomente as linhas abaixo para uso externo
     #ports:
@@ -23,7 +24,7 @@ services:
 
     environment:
       ## Senha do postgres 
-      - POSTGRES_PASSWORD=fddeb3450053605bc5a8efcebe17f324
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
 
       ## Timezone
       - TZ=America/Caracas
@@ -43,10 +44,10 @@ services:
 
 volumes:
   pgvector:
-    external: true
+    #external: true
     name: pgvector
 
 networks:
-  principal: ## Nome da rede interna
-    external: true
-    name: principal ## Nome da rede interna
+  ${RED_NAME}: ## Nome da rede interna
+    #external: true
+    name: ${RED_NAME} ## Nome da rede interna

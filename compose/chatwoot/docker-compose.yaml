@@ -4,7 +4,8 @@ services:
 ## --------------------------- ORION --------------------------- ##
 
   chatwoot_app:
-    image: chatwoot/chatwoot:v4.1.0 ## Versão do Chatwoot
+    image: chatwoot/chatwoot:v4.5.2 ## Versão do Chatwoot
+    container_name: ${CONTAINER_NAME} ## Nome do container
     restart: unless-stopped
     command: bundle exec rails s -p 3000 -b 0.0.0.0
     entrypoint: docker/entrypoints/rails.sh
@@ -12,23 +13,23 @@ services:
     volumes:
       - chatwoot_storage:/app/storage ## Arquivos de conversa
       - chatwoot_public:/app/public ## Arquivos de logos
-      - chatwoot_mailer:/app/app/views/devise/mailer ## Arquivos de email
-      - chatwoot_mailers:/app/app/views/mailers ## Arquivos de emails
+      #- chatwoot_mailer:/app/app/views/devise/mailer ## Arquivos de email
+      #- chatwoot_mailers:/app/app/views/mailers ## Arquivos de emails
 
-    networks:
-      - principal ## Nome da rede interna
+    #networks:
+      #- principal ## Nome da rede interna
     environment:
       ## 🌐 Qualquer Url com # no final
       #- CHATWOOT_HUB_URL=https://oriondesign.art.br/setup#
 
       ## 🏢 Nome da Empresa
-      - INSTALLATION_NAME=n8n
+      - INSTALLATION_NAME=chatwoot
 
       ## 🔐 Secret key
-      - SECRET_KEY_BASE=e7de5amjdifh16b4522500ffa42780e2e39e7bs8
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
 
       ## 💬 Url Chatwoot
-      - FRONTEND_URL=https://chatwoot.conext.net.ve # Mismo que FRONTEND_URL
+      - FRONTEND_URL=${SSL}://${URL} # Mismo que FRONTEND_URL
       - FORCE_SSL=true
 
       
@@ -46,9 +47,9 @@ services:
       - REDIS_URL=redis://redis:6379
 
       ## 🗄️ Dados do Postgres
-      - POSTGRES_HOST=pgvector
+      - POSTGRES_HOST=${CONTAINER_NAME}_DB_POSTGRESQL
       - POSTGRES_USERNAME=postgres
-      - POSTGRES_PASSWORD=fddeb3450053605bc5a8efcebe17f324 ## Senha do postgres
+      - POSTGRES_PASSWORD=${DB_POSTGRES_PASSWORD} ## Senha do postgres
       - POSTGRES_DATABASE=chatwoot
 
       ## 🏠 Armazenamento
@@ -61,17 +62,17 @@ services:
       #- STORAGE_FORCE_PATH_STYLE=true
 
       ## 📧 Dados do SMTP
-      - MAILER_SENDER_EMAIL=cesar.sanchez@test.com.ve <cesar.sanchez@test.com.ve> ## Email SMTP
+      - MAILER_SENDER_EMAIL=${SMTP_CORREO} <${SMTP_CORREO}> ## Email SMTP
       - SMTP_DOMAIN=conext.com.ve ## Dominio do email
       - SMTP_ADDRESS=smtp.gmail.com ## Host SMTP
       - SMTP_PORT=465 ## Porta SMTP
       - SMTP_SSL=true ## Se a porta for 465 = true | Se a porta for 587 = false
-      - SMTP_USERNAME=cesar.sanchez@test.com.ve ## Usuario SMTP
-      - SMTP_PASSWORD=xxxxxxxxx ## Senha do SMTP
+      - SMTP_USERNAME=${SMTP_CORREO} ## Usuario SMTP
+      - SMTP_PASSWORD=${SMTP_PASS} ## Senha do SMTP
       - SMTP_AUTHENTICATION=login
       - SMTP_ENABLE_STARTTLS_AUTO=true
       - SMTP_OPENSSL_VERIFY_MODE=peer
-      - MAILER_INBOUND_EMAIL_DOMAIN=cesar.sanchez@test.com.ve ## Email SMTP
+      - MAILER_INBOUND_EMAIL_DOMAIN=${SMTP_CORREO} ## Email SMTP
 
       ## ⚙️ Melhorias
       - SIDEKIQ_CONCURRENCY=10
@@ -81,9 +82,9 @@ services:
       - ENABLE_RACK_ATTACK=false
 
       ## ⚡ Outras configurações
-      # - NODE_ENV=production
-      # - RAILS_ENV=production
-      # - INSTALLATION_ENV=docker
+      - NODE_ENV=production
+      - RAILS_ENV=production
+      - INSTALLATION_ENV=docker
       # - RAILS_LOG_TO_STDOUT=true
       # - USE_INBOX_AVATAR_FOR_BOT=true
       # - ENABLE_ACCOUNT_SIGNUP=false
@@ -113,31 +114,32 @@ services:
 ## --------------------------- ORION --------------------------- ##
 
   chatwoot_sidekiq:
-    image: chatwoot/chatwoot:v4.1.0 ## Versão do Chatwoot
+    image: chatwoot/chatwoot:v4.5.2 ## Versão do Chatwoot
+    container_name: ${CONTAINER_NAME} ## Nome do container
     restart: unless-stopped
     command: bundle exec sidekiq -C config/sidekiq.yml
 
     volumes:
       - chatwoot_storage:/app/storage ## Arquivos de conversa
       - chatwoot_public:/app/public ## Arquivos de logos
-      - chatwoot_mailer:/app/app/views/devise/mailer ## Arquivos de email
-      - chatwoot_mailers:/app/app/views/mailers ## Arquivos de emails
+      #- chatwoot_mailer:/app/app/views/devise/mailer ## Arquivos de email
+      #- chatwoot_mailers:/app/app/views/mailers ## Arquivos de emails
 
-    networks:
-      - principal ## Nome da rede interna
+    #networks:
+      #- principal ## Nome da rede interna
 
     environment:
       ## 🌐 Qualquer Url com # no final
       #- CHATWOOT_HUB_URL=https://oriondesign.art.br/setup#
 
       ## 🏢 Nome da Empresa
-      - INSTALLATION_NAME=Conext
+      - INSTALLATION_NAME=chatwoot
 
       ## 🔐 Secret key
-      - SECRET_KEY_BASE=e7de5amjdifh16b4522500ffa42780e2e39e7bs8
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
 
       ## 💬 Url Chatwoot
-      - FRONTEND_URL=https://chatwoot.conext.net.ve # Mismo que FRONTEND_URL
+      - FRONTEND_URL=${SSL}://${URL} # Mismo que FRONTEND_URL
       - FORCE_SSL=true
 
       ## 🌍 Idioma/Localização padrão
@@ -153,9 +155,9 @@ services:
       - REDIS_URL=redis://redis:6379
 
       ## 🗄️ Dados do Postgres
-      - POSTGRES_HOST=pgvector
+      - POSTGRES_HOST=${CONTAINER_NAME}_DB_POSTGRESQL
       - POSTGRES_USERNAME=postgres
-      - POSTGRES_PASSWORD=fddeb3450053605bc5a8efcebe17f324 ## Senha do postgres
+      - POSTGRES_PASSWORD=${DB_POSTGRES_PASSWORD} ## Senha do postgres
       - POSTGRES_DATABASE=chatwoot
 
       ## 🏠 Armazenamento
@@ -168,17 +170,17 @@ services:
       #- STORAGE_FORCE_PATH_STYLE=true
 
       ## 📧 Dados do SMTP
-      - MAILER_SENDER_EMAIL=cesar.sanchez@test.com.ve <cesar.sanchez@test.com.ve> ## Email SMTP
+      - MAILER_SENDER_EMAIL=${SMTP_CORREO} <${SMTP_CORREO}> ## Email SMTP
       - SMTP_DOMAIN=conext.com.ve ## Dominio do email
       - SMTP_ADDRESS=smtp.gmail.com ## Host SMTP
       - SMTP_PORT=465 ## Porta SMTP
       - SMTP_SSL=true ## Se a porta for 465 = true | Se a porta for 587 = false
-      - SMTP_USERNAME=cesar.sanchez@test.com.ve ## Usuario SMTP
-      - SMTP_PASSWORD=xxxxxxxxx ## Senha do SMTP
+      - SMTP_USERNAME=${SMTP_CORREO} ## Usuario SMTP
+      - SMTP_PASSWORD=${SMTP_PASS} ## Senha do SMTP
       - SMTP_AUTHENTICATION=login
       - SMTP_ENABLE_STARTTLS_AUTO=true
       - SMTP_OPENSSL_VERIFY_MODE=peer
-      - MAILER_INBOUND_EMAIL_DOMAIN=cesar.sanchez@test.com.ve ## Email SMTP
+      - MAILER_INBOUND_EMAIL_DOMAIN=${SMTP_CORREO} ## Email SMTP
 
       ## ⚙️ Melhorias
       - SIDEKIQ_CONCURRENCY=10
@@ -188,9 +190,9 @@ services:
       - ENABLE_RACK_ATTACK=false
 
       ## ⚡ Outras configurações
-      # - NODE_ENV=production
-      # - RAILS_ENV=production
-      # - INSTALLATION_ENV=docker
+      - NODE_ENV=production
+      - RAILS_ENV=production
+      - INSTALLATION_ENV=docker
       # - RAILS_LOG_TO_STDOUT=true
       # - USE_INBOX_AVATAR_FOR_BOT=true
       # - ENABLE_ACCOUNT_SIGNUP=false
@@ -210,19 +212,19 @@ services:
 
 volumes:
   chatwoot_storage:
-    external: true
+    #external: true
     name: chatwoot_storage
   chatwoot_public:
-    external: true
+    #external: true
     name: chatwoot_public
-  chatwoot_mailer:
-    external: true
-    name: chatwoot_mailer
-  chatwoot_mailers:
-    external: true
-    name: chatwoot_mailers
+  #chatwoot_mailer:
+    #external: true
+    #name: chatwoot_mailer
+  #chatwoot_mailers:
+    #external: true
+    #name: chatwoot_mailers
 
 networks:
-  principal: ## Nome da rede interna
-    external: true
-    name: principal ## Nome da rede interna
+  ${RED_NAME}: ## Nome da rede interna
+    #external: true
+    name: ${RED_NAME} ## Nome da rede interna

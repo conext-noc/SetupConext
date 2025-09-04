@@ -6,6 +6,12 @@ RED='\033[0;31m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Validar si el script se está ejecutando como root
+if [ "$(id -u)" -ne 0 ]; then
+    echo -e "${RED}Este script debe ejecutarse con privilegios de root. Por favor, usa 'sudo bash <(curl -sSL setup.conext.net.ve)'.${NC}"
+    exit 1
+fi
+
 check_and_clone_repo() {
     echo -e "${BLUE}Verificando si el repositorio SetupConext existe...${NC}"
     if [ -d "SetupConext" ]; then
@@ -16,7 +22,7 @@ check_and_clone_repo() {
         check_command_status "Clonación del repositorio SetupConext (rama dev)"
     fi
 }
-#check_and_clone_repo
+check_and_clone_repo
 
 cd ./SetupConext || { echo -e "${RED}Error: No se pudo cambiar al directorio SetupConext.${NC}"; exit 1; }
 
@@ -35,10 +41,10 @@ show_menu() {
     echo "==========================================="
     echo "1. Instalar PostgrestSQL"
     echo "2. Instalar Docker and Portainer"
-    echo "3. Instalar N8N"
+    echo "3. Instalar N8N + RedisDB + PostgresSQL"
     echo "4. Instalar Redis DB"
     echo "5. Instalar PGVector"
-    echo "---------------------"
+    echo "5. Instalar Chatwoot + PGVector + RedisDB"
     echo "---------------------"
     echo "---------------------"
     echo "---------------------"
@@ -71,6 +77,7 @@ while true; do
         2) install_docker_portainer ;;
         3) install_n8n ;;
         4) install_redisdb ;;
+        5) install_pgvector ;;
         #====================================================================
         13) configuring_nameserver_and_hosts ;;
         14) install_python_and_alias;;

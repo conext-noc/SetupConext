@@ -31,7 +31,7 @@ services:
       ## 🗄️ Configuração do Banco de Dados
       - DATABASE_ENABLED=true
       - DATABASE_PROVIDER=postgresql
-      - DATABASE_CONNECTION_URI=postgresql://postgres:a9022987d6d0819b7707a9cef2f1f5db@postgres:5432/evolution
+      - DATABASE_CONNECTION_URI=postgresql://postgres:${DB_PASSWORD}@postgres:5432/evolution
       - DATABASE_CONNECTION_CLIENT_NAME=evolution
       - DATABASE_SAVE_DATA_INSTANCE=true
       - DATABASE_SAVE_DATA_NEW_MESSAGE=true

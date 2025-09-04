@@ -229,3 +229,88 @@ install_n8n() {
 
     echo "N8N instalado."
 }
+
+# Función para instalar PGVector
+install_pgvector() {
+    echo "================================================="
+    echo "Instalando PGVector..."
+    echo "================================================="
+    echo ""
+    cd ./compose/pgvector || exit 1
+    ##################################################
+    ENV_FILE=".env"
+    
+    if [ -n "$1" ] && [ -n "$2" ] && [ -n "$3" ]; then
+        red_name="$1"
+        CONTAINER_NAME="$2"
+        DB_PASSWORD="$3"
+        echo -e "✅ ${GREEN}Usando variables pasadas: Red='$red_name', CONTAINER_NAME='$CONTAINER_NAME'${NC}"
+    else
+        DB_PASSWORD=$(cat /dev/urandom | tr -dc 'a-z0-9' | head -c 32)
+        echo -e "${BLUE}Escribe el nombre que tendra la red en docker${NC}"
+        read -p "Nombre: " red_name
+        CONTAINER_NAME="DB_PGVECTOR"
+    fi
+    ##################################################
+    check_env_exist "$ENV_FILE"
+    echo "CONTAINER_NAME=$CONTAINER_NAME" >> "$ENV_FILE"
+    echo "RED_NAME=$red_name" >> "$ENV_FILE"
+    echo "DB_PASSWORD=$DB_PASSWORD" >> "$ENV_FILE"
+    
+    check_and_install_docker
+    
+    docker network create "$red_name" > /dev/null 2>&1
+    sleep 2
+    check_command_status "1/3 Creación de red de docker: $red_name"
+    docker compose up -d > /dev/null 2>&1
+    check_command_status "2/3 Instalación de PGVector"
+    docker network connect "$red_name" $CONTAINER_NAME > /dev/null 2>&1
+    check_command_status "3/3 Conectando $CONTAINER_NAME a la red: $red_name"
+    cd ../..
+    echo "PGVector instalado."
+}
+
+install_chatwoot() {
+    echo "================================================="
+    echo "Instalando CHATWOOT..."
+    echo "================================================="
+    echo ""
+    
+    #Creacion variable de entorno
+    DB_POSTGRES_PASSWORD=$(cat /dev/urandom | tr -dc 'a-z0-9' | head -c 32)
+    SECRET_KEY_BASE=$(cat /dev/urandom | tr -dc 'a-z0-9' | head -c 40)  
+
+    echo -e "${BLUE}Escribe el dominio o ip para el n8n ej:(n8n.conext.net.ve o 181.232.180.1)${NC}"
+    read -p "dominio o ip: " URL  
+    #-------------------------------------------------------------
+    echo -e "${BLUE}Escribe si es http o https${NC}"
+    read -p "tipo de ssl: " SSL 
+    #-------------------------------------------------------------
+    echo -e "${BLUE}Escribe el nombre del proyecto ej:(n8n_chatboot)${NC}"
+    read -p "Nombre: " PROJECT_NAME  
+    #-------------------------------------------------------------
+    echo -e "${BLUE}Escribe el correo SMTP${NC}"
+    read -p "Correo: " SMTP_CORREO 
+    #-------------------------------------------------------------
+    echo -e "${BLUE}Escribe la clave del SMTP${NC}"
+    read -p "Clave: " SMTP_PASS 
+    #-------------------------------------------------------------
+    echo -e "${BLUE}Escribe el nombre que tendra la red en docker${NC}"
+    read -p "Nombre: " red_name
+
+    cd ./compose/chatwoot || exit 1
+    CONTAINER_MAYUSCULES=$(echo "$PROJECT_NAME" | tr '[:lower:]' '[:upper:]')
+    CONTAINER_NAME_CHATWOOT="${CONTAINER_MAYUSCULES}_CHATWOOT"
+    ENV_FILE=".env"
+    check_env_exist "$ENV_FILE"
+    echo "DB_POSTGRES_PASSWORD=$DB_POSTGRES_PASSWORD" >> "$ENV_FILE"
+    echo "SECRET_KEY_BASE=$SECRET_KEY_BASE" >> "$ENV_FILE"
+    echo "URL=$URL" >> "$ENV_FILE"
+    echo "SSL=$SSL" >> "$ENV_FILE"
+    echo "SMTP_CORREO=$SMTP_CORREO" >> "$ENV_FILE"
+    echo "SMTP_PASS=$SMTP_PASS" >> "$ENV_FILE"
+    echo "CONTAINER_NAME=$CONTAINER_NAME_CHATWOOT" >> "$ENV_FILE"
+    echo "RED_NAME=$red_name" >> "$ENV_FILE"
+
+    cd ../..
+}
